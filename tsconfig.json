@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+      "target": "es6",                    // Specifies the ECMAScript target version
+      "typeRoots": ["./node_modules/@types", "./src/types"],
+      "module": "commonjs",                // Specifies module code generation (CommonJS for Node.js)
+      "lib": ["es6", "dom"],               // Include necessary libraries for the project (e.g., DOM APIs for web)
+      "allowJs": true,                     // Allow JavaScript files to be compiled
+      "checkJs": true,                     // Enable type checking on JavaScript files
+      "strict": true,                      // Enable all strict type-checking options
+      "esModuleInterop": true,             // Ensures compatibility with non-ES module imports (common in Node.js)
+      "skipLibCheck": true,                // Skip type checking of declaration files (improves build speed)
+      "forceConsistentCasingInFileNames": true, // Ensures consistent file name casing across the project
+      "moduleResolution": "node",          // Resolves modules using Node.js module resolution strategy
+      "resolveJsonModule": true,           // Allows importing of JSON files as modules
+      "noEmit": false,                      // Don't emit output (useful if you only want to type-check)
+      "isolatedModules": true,             // Ensures each file can be safely transpiled independently
+      "noUnusedLocals": true,              // Reports errors for unused variables
+      "noUnusedParameters": true,          // Reports errors for unused function parameters
+      "noImplicitAny": true,               // Requires explicit type annotations for variables
+      "strictNullChecks": true,            // Ensures null and undefined are treated as distinct types
+      "strictFunctionTypes": true,         // Ensures function parameters and return types are strictly checked
+      "skipDefaultLibCheck": true,         // Skip checking the default library types (useful for performance)
+      "declaration": true,                 // Generates corresponding `.d.ts` declaration files
+      "outDir": "./dist",                  // Output directory for compiled files
+      "rootDir": "./src",                  // Root directory of the source files
+      "baseUrl": "src",                      // Base directory to resolve non-relative module imports
+      "paths": {
+        "*": ["node_modules/*"]            // Custom module resolution paths (if needed)
+      }
+    },
+    "include": [
+      "src/**/*.ts"                        // Include TypeScript files from the `src` folder
+    ],
+    "exclude": [
+      "node_modules",                      // Exclude `node_modules` from compilation
+      "dist"                               // Exclude `dist` output folder
+    ]
+  }
+  
