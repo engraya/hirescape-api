@@ -3,13 +3,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface IUser extends Document {
   email: string;
   password: string;
-  verified: boolean;
-  verificationCode: string | undefined;
-  forgotPasswordCode: string | undefined;
-  verificationCodeValidation : Number | undefined
-  forgotPasswordCodeValidation: Number | undefined;
-  createdAt: Date;
-  updatedAt: Date;
+  createdJobs: mongoose.Types.ObjectId[]; // Jobs created by the user
+  appliedJobs: mongoose.Types.ObjectId[]; // Jobs the user has applied for
+  isAdmin: boolean; // Admin field
 }
 
 const userSchema = new Schema<IUser>(
@@ -18,7 +14,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       unique: [true, "Email must be unique"],
-      minlength: [5, "Eamil must have 5 characters"],
+      minlength: [5, "Email must have 5 characters"],
       lowercase: true, 
       trim: true, 
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'], 
@@ -26,37 +22,32 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "Password is required"],
-      minlength: [6, "Password must be 6 characters in Length"],
-      trim : true,
-      select : false
+      minlength: [6, "Password must be 6 characters in length"],
+      trim: true,
+      select: false,
     },
-    verified: {
+    isAdmin: {
       type: Boolean,
-      default: false, 
+      default: false, // By default, all users are NOT admin
     },
-    verificationCode: {
-      type: String,
-      select: false,
-    },
-    verificationCodeValidation: {
-        type: Number,
-        select: false,
-    },
-    forgotPasswordCode: {
-      type: String,
-      select: false,
-    },
-    forgotPasswordCodeValidation: {
-      type: Number,
-      select: false,
-    },
+    createdJobs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job", // Reference to the Job model
+      }
+    ],
+    appliedJobs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job", // Reference to the Job model
+      }
+    ]
   },
   {
     timestamps: true,
   }
 );
 
-// Create a User model based on the schema
 const User = mongoose.model<IUser>('User', userSchema);
 
 export default User;

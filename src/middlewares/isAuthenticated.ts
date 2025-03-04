@@ -1,31 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import User from '../models/userModel';
 
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction): void => {
-    // Get the token from the "Authorization" cookie or header
-    const token = req.cookies.Authorization || req.headers['authorization']?.split(' ')[1];
-
-
-    if (!token) {
-        res.status(401).json({ success: false, message: 'UnAuthorized. Please log in to continue.' });
-        return;  // Don't return the Response, just end the execution here.
-    }
-
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Verify the token using the JWT secret
+        // Get the token from the "Authorization" cookie or header
+        const token = req.cookies.Authorization || req.headers['authorization']?.split(' ')[1];
+
+        if (!token) {
+            res.status(401).json({ success: false, message: 'Unauthorized. Please log in to continue.' });
+            return;  // Ensure we return void explicitly
+        }
+
+        // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string, email: string, verified: boolean };
-        
-        // Attach user information to the request object for further use in route handlers
+
+        // Fetch the user from the database
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            res.status(404).json({ success: false, message: 'User not found.' });
+            return 
+        }
+
+        // Attach user info to the request object
         req.user = { 
             userId: decoded.userId, 
             email: decoded.email,
-            verified: decoded.verified
+            verified: decoded.verified,
+            isAdmin: user.isAdmin  // Include isAdmin property
         };
 
-        // Proceed to the next middleware or route handler
+        // Proceed to the next middleware
         next();
     } catch (error) {
-        res.status(401).json({ success: false, message: 'Invalid or expired token.' });
-        return;  // End execution after sending response.
+       res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+        return 
     }
 };

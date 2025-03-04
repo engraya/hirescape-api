@@ -51,64 +51,6 @@ export const userLoginSchema = Joi.object({
   });
 
 
-  export const verifyVerificationCodeSchema = Joi.object({
-    email: Joi.string()
-      .email({ tlds: { allow: false } })  // Ensures a valid email address without restricting specific domains
-      .required()
-      .messages({
-        'string.base': 'Email must be a string',
-        'string.empty': 'Email cannot be empty',
-        'string.email': 'Email must be a valid email address',
-        'any.required': 'Email is required'
-      }),
-  
-    code: Joi.number().required()
-  });
-
-  export const changePasswordSchema = Joi.object({
-    newPassword: Joi.string()
-      .min(6)  // Password must be at least 6 characters long (you can adjust this length as needed)
-      .required()
-      .messages({
-        'string.base': 'Password must be a string',
-        'string.empty': 'Password cannot be empty',
-        'string.min': 'Password must be at least 6 characters long',  // You can adjust this based on your password policy
-        'any.required': 'Password is required'
-      }),
-      oldPassword: Joi.string()
-      .min(6)  // Password must be at least 6 characters long (you can adjust this length as needed)
-      .required()
-      .messages({
-        'string.base': 'Password must be a string',
-        'string.empty': 'Password cannot be empty',
-        'string.min': 'Password must be at least 6 characters long',  // You can adjust this based on your password policy
-        'any.required': 'Password is required'
-      })
-  });
-
-  export const forgotPasswordCodeSchema = Joi.object({
-    email: Joi.string()
-      .email({ tlds: { allow: false } })  // Ensures a valid email address without restricting specific domains
-      .required()
-      .messages({
-        'string.base': 'Email must be a string',
-        'string.empty': 'Email cannot be empty',
-        'string.email': 'Email must be a valid email address',
-        'any.required': 'Email is required'
-      }),
-    newPassword: Joi.string()
-      .min(6)  // Password must be at least 6 characters long (you can adjust this length as needed)
-      .required()
-      .messages({
-        'string.base': 'Password must be a string',
-        'string.empty': 'Password cannot be empty',
-        'string.min': 'Password must be at least 6 characters long',  // You can adjust this based on your password policy
-        'any.required': 'Password is required'
-      }),
-    code: Joi.number().required()
-  });
-
-
   export const createPostSchema = Joi.object({
     title: Joi.string().required().min(3).max(50).required(),
     description: Joi.string().min(3).max(500).required(),

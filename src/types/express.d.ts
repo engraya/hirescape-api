@@ -7,6 +7,7 @@ declare global {
         userId: string;
         email: string;
         verified: boolean;
+        isAdmin : boolean
       };
     }
   }
