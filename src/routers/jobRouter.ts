@@ -1,5 +1,5 @@
 import express from 'express';
-const jobController = require('../contollers/jobController')
+const jobController = require('../controllers/jobController')
 import { isAuthenticated } from '../middlewares/isAuthenticated';
 
 

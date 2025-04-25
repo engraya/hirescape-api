@@ -1,5 +1,5 @@
 import express from 'express';
-const authController = require('../contollers/authController')
+const authController = require('../controllers/authController')
 const router = express.Router();
 import { isAuthenticated } from '../middlewares/isAuthenticated';
 import { isAdmin } from '../middlewares/isAdmin';
