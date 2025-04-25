@@ -33,23 +33,29 @@ export const getJobById = async (req: Request, res: Response) => {
 export const createJob = async (req: Request, res: Response) => {
     try {
         const { title, company, salary, location, matchScore, requiredSkills } = req.body;
-        const userId = req.user?.userId; // Assuming req.user is populated from authentication middleware
+        const userId = req.user?.userId;
 
         if (!userId) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
+        // Create and save the job
         const newJob = new Job({ title, company, salary, location, matchScore, requiredSkills, createdBy: userId });
         const savedJob = await newJob.save();
 
-        // Add job to user's createdJobs list
-        await User.findByIdAndUpdate(userId, { $push: { createdJobs: savedJob._id } });
+        // Update the user's createdJobs array with the full job object
+        await User.findByIdAndUpdate(
+            userId,
+            { $push: { createdJobs: savedJob.toObject() } } // Save the entire job object
+        );
 
         res.status(201).json({ success: true, message: 'Job created successfully', job: savedJob });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to create job' });
+        res.status(500).json({ success: false, message: 'Failed to create a job' });
     }
 };
+
+
 
 // Update a job (only creator can update)
 export const updateJob = async (req: Request, res: Response) => {

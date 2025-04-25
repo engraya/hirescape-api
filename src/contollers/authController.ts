@@ -99,17 +99,20 @@ export const logout = async (_req: Request, res: Response) => {
 // Get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
-        const users = await User.find().select('-password');
+        // Fetch all users and populate the 'createdJobs' field with the full job data
+        const users = await User.find().select('-password').populate('createdJobs');
+
         res.status(200).json({ success: true, users });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to retrieve users' });
     }
 };
 
+
 // Get user by ID
 export const getUserById = async (req: Request, res: Response) => {
     try {
-        const user = await User.findById(req.params.id).select('-password');
+        const user = await User.findById(req.params.id).select('-password').populate('createdJobs');
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
