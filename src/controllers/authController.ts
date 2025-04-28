@@ -4,38 +4,56 @@ import User from '../models/userModel';
 import { doHash, doHashValidation } from '../utils/hashing';
 import jwt from 'jsonwebtoken';
 
-export const register = async (req : Request, res : Response) => {
-    const { email, password } = req.body
+
+export const register = async (req: Request, res: Response) => {
+    const { email, password, firstName, lastName, confirmPassword } = req.body;
+
     try {
-        const { error } = userRegisterSchema.validate({ email, password })
+        // Validate the request body using the updated userRegisterSchema
+        const { error } = userRegisterSchema.validate({ email, password, firstName, lastName, confirmPassword });
 
         if (error) {
-            return res.status(401).json({ success : false, message : error.details[0].message})
-        }
-        const existingUser = await User.findOne({ email });
-        
-        if (existingUser) {
-            return res.status(401).json({ success : false, message : "User already exist..!"})
+            return res.status(401).json({ success: false, message: error.details[0].message });
         }
 
+        // Check if the user already exists
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(401).json({ success: false, message: 'User already exists..!' });
+        }
+
+        // Hash the password
         const hashedPassword = await doHash(password, 12);
 
+        // Create a new user instance
         const newUser = new User({
             email,
-            password : hashedPassword
+            password: hashedPassword,
+            firstName,
+            lastName,
+            isAdmin: false  // Default is false, but you can customize based on your app
         });
+
+        // Save the new user to the database
         const result = await newUser.save();
+
+        // Don't return the password in the response
         // @ts-ignore
         result.password = undefined;
+
+        // Send the success response
         res.status(201).json({
-            success : true,
-            message : 'User Account created Successfully....!',
+            success: true,
+            message: 'User account created successfully....!',
             result
-        })
+        });
+
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ success: false, message: 'An error occurred while creating the user.' });
     }
-}
+};
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -82,7 +100,9 @@ export const login = async (req: Request, res: Response) => {
             token,
             user: {
                 id: existingUser._id,
-                email: existingUser.email
+                email: existingUser.email,
+                firstName: existingUser.firstName,
+                lastName: existingUser.lastName,
             }
         });
     } catch (error) {
@@ -95,7 +115,6 @@ export const logout = async (_req: Request, res: Response) => {
     res.clearCookie('Authorization').status(200).json({ success : true, message : 'User Logged out successfully....!'})
 };
 
-
 // Get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
@@ -107,7 +126,6 @@ export const getAllUsers = async (_req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Failed to retrieve users' });
     }
 };
-
 
 // Get user by ID
 export const getUserById = async (req: Request, res: Response) => {

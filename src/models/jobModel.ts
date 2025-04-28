@@ -5,8 +5,13 @@ interface IJob extends Document {
   company: string;
   salary: string;
   location: string;
-  matchScore: number;
+  description: string;  // Replacing matchScore with job description
   requiredSkills: string[];
+  jobType: string;  // Full-time, part-time, etc.
+  experienceLevel: string;  // Junior, Mid, Senior
+  industry: string;  // Industry of the job
+  applicationDeadline: Date;  // Deadline for applying to the job
+  benefits: string[];  // Optional benefits the company provides
   createdBy: mongoose.Types.ObjectId; // Reference to the user who created the job
   applicants: mongoose.Types.ObjectId[]; // List of users who applied
 }
@@ -33,15 +38,37 @@ const jobSchema = new Schema<IJob>(
       required: [true, "Job location is required"],
       trim: true,
     },
-    matchScore: {
-      type: Number,
-      required: true,
-      min: [0, "Match score must be at least 0"],
-      max: [100, "Match score cannot exceed 100"],
+    description: {
+      type: String,
+      required: [true, "Job description is required"],
+      trim: true,
     },
     requiredSkills: {
       type: [String],
       required: [true, "At least one skill is required"],
+    },
+    jobType: {
+      type: String,
+      required: [true, "Job type is required"],
+      enum: ['full-time', 'part-time', 'contract', 'internship'],  // Limited to common job types
+    },
+    experienceLevel: {
+      type: String,
+      required: [true, "Experience level is required"],
+      enum: ['junior', 'mid', 'senior'],  // Common experience levels
+    },
+    industry: {
+      type: String,
+      required: [true, "Industry is required"],
+      trim: true,
+    },
+    applicationDeadline: {
+      type: Date,
+      required: [true, "Application deadline is required"],
+    },
+    benefits: {
+      type: [String],
+      default: [],  // Empty array by default
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +83,7 @@ const jobSchema = new Schema<IJob>(
     ]
   },
   {
-    timestamps: true,
+    timestamps: true,  // Automatically adds createdAt and updatedAt
   }
 );
 
