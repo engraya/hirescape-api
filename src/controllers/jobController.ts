@@ -6,7 +6,11 @@ import mongoose from 'mongoose';
 // Get all jobs
 export const getAllJobs = async (_req: Request, res: Response) => {
     try {
-        const jobs = await Job.find().populate('createdBy', 'email').populate('applicants', 'email');
+        const jobs = await Job.find()
+            .sort({ createdAt: -1 })
+            .populate('createdBy', 'email')
+            .populate('applicants', 'email');
+
         res.status(200).json({ success: true, jobs });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to retrieve jobs' });
@@ -32,29 +36,27 @@ export const getJobById = async (req: Request, res: Response) => {
 // Create a new job
 export const createJob = async (req: Request, res: Response) => {
     try {
-        // Destructure the job fields from the request body
+        // Destructure the job fields from the request body (excluding requiredSkills and benefits)
         const {
             title,
             company,
             salary,
             location,
-            description,  // Replacing matchScore with description
-            requiredSkills,
+            description,
             jobType,
             experienceLevel,
             industry,
-            applicationDeadline,
-            benefits
+            applicationDeadline
         } = req.body;
 
-        const userId = req.user?.userId;  // Assuming user info is attached to req.user (e.g., from a JWT middleware)
+        const userId = req.user?.userId; // Assuming user info is attached to req.user (e.g., from JWT middleware)
 
         if (!userId) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
-        // Validate required fields (Optional: Use Joi or other validation libraries if needed)
-        if (!title || !company || !salary || !location || !description || !requiredSkills || !jobType || !experienceLevel || !industry || !applicationDeadline) {
+        // Validate required fields
+        if (!title || !company || !salary || !location || !description || !jobType || !experienceLevel || !industry || !applicationDeadline) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
 
@@ -65,12 +67,10 @@ export const createJob = async (req: Request, res: Response) => {
             salary,
             location,
             description,
-            requiredSkills,
             jobType,
             experienceLevel,
             industry,
             applicationDeadline,
-            benefits,
             createdBy: userId
         });
 
@@ -78,7 +78,7 @@ export const createJob = async (req: Request, res: Response) => {
 
         // Optionally: Update the user's createdJobs array with the new job's ID
         await User.findByIdAndUpdate(userId, {
-            $push: { createdJobs: savedJob._id } // Save only the job ID to keep the reference
+            $push: { createdJobs: savedJob._id }
         });
 
         res.status(201).json({ success: true, message: 'Job created successfully', job: savedJob });
@@ -91,53 +91,51 @@ export const createJob = async (req: Request, res: Response) => {
 // Update a job (only creator can update)
 export const updateJob = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?.userId;  // Assuming user info is available through req.user (e.g., from JWT middleware)
+        const userId = req.user?.userId;
         const jobId = req.params.id;
 
         // Find the job by ID
         const job = await Job.findById(jobId);
 
-        // If the job doesn't exist
         if (!job) {
             return res.status(404).json({ success: false, message: 'Job not found' });
         }
 
-        // Check if the user is authorized to update this job (must be the creator)
+        // Check if the user is authorized to update this job
         if (job.createdBy.toString() !== userId) {
             return res.status(403).json({ success: false, message: 'Unauthorized to update this job' });
         }
 
-        // Destructure the fields from the request body (assuming these fields are optional)
+        // Destructure only existing fields
         const {
             title,
             company,
             salary,
             location,
             description,
-            requiredSkills,
             jobType,
             experienceLevel,
             industry,
-            applicationDeadline,
-            benefits
+            applicationDeadline
         } = req.body;
 
-        // Prepare the fields to be updated (ensure that undefined fields are not sent to the database)
+        // Prepare the fields to be updated
         const updateFields: any = {};
         if (title) updateFields.title = title;
         if (company) updateFields.company = company;
         if (salary) updateFields.salary = salary;
         if (location) updateFields.location = location;
         if (description) updateFields.description = description;
-        if (requiredSkills) updateFields.requiredSkills = requiredSkills;
         if (jobType) updateFields.jobType = jobType;
         if (experienceLevel) updateFields.experienceLevel = experienceLevel;
         if (industry) updateFields.industry = industry;
         if (applicationDeadline) updateFields.applicationDeadline = applicationDeadline;
-        if (benefits) updateFields.benefits = benefits;
 
-        // Update the job document in the database
-        const updatedJob = await Job.findByIdAndUpdate(jobId, updateFields, { new: true, runValidators: true });
+        // Update the job document
+        const updatedJob = await Job.findByIdAndUpdate(jobId, updateFields, {
+            new: true,
+            runValidators: true,
+        });
 
         res.status(200).json({ success: true, message: 'Job updated successfully', job: updatedJob });
     } catch (error) {
@@ -213,7 +211,7 @@ export const getUserCreatedJobs = async (req: Request, res: Response) => {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
-        const createdJobs = await Job.find({ createdBy: userId }).populate('applicants', 'email');
+        const createdJobs = await Job.find({ createdBy: userId }).populate('applicants', 'email').sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, jobs: createdJobs });
     } catch (error) {
@@ -230,7 +228,7 @@ export const getUserAppliedJobs = async (req: Request, res: Response) => {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
-        const appliedJobs = await Job.find({ applicants: userId }).populate('createdBy', 'email');
+        const appliedJobs = await Job.find({ applicants: userId }).populate('createdBy', 'email').sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, jobs: appliedJobs });
     } catch (error) {

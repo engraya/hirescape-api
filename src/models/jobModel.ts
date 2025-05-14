@@ -5,15 +5,13 @@ interface IJob extends Document {
   company: string;
   salary: string;
   location: string;
-  description: string;  // Replacing matchScore with job description
-  requiredSkills: string[];
-  jobType: string;  // Full-time, part-time, etc.
-  experienceLevel: string;  // Junior, Mid, Senior
-  industry: string;  // Industry of the job
-  applicationDeadline: Date;  // Deadline for applying to the job
-  benefits: string[];  // Optional benefits the company provides
-  createdBy: mongoose.Types.ObjectId; // Reference to the user who created the job
-  applicants: mongoose.Types.ObjectId[]; // List of users who applied
+  description: string;
+  jobType: string;
+  experienceLevel: string;
+  industry: string;
+  applicationDeadline: Date;
+  createdBy: mongoose.Types.ObjectId;
+  applicants: mongoose.Types.ObjectId[];
 }
 
 const jobSchema = new Schema<IJob>(
@@ -43,19 +41,15 @@ const jobSchema = new Schema<IJob>(
       required: [true, "Job description is required"],
       trim: true,
     },
-    requiredSkills: {
-      type: [String],
-      required: [true, "At least one skill is required"],
-    },
     jobType: {
       type: String,
       required: [true, "Job type is required"],
-      enum: ['full-time', 'part-time', 'contract', 'internship'],  // Limited to common job types
+      enum: ['full-time', 'part-time', 'contract', 'internship'],
     },
     experienceLevel: {
       type: String,
       required: [true, "Experience level is required"],
-      enum: ['junior', 'mid', 'senior'],  // Common experience levels
+      enum: ['junior', 'mid', 'senior'],
     },
     industry: {
       type: String,
@@ -66,24 +60,20 @@ const jobSchema = new Schema<IJob>(
       type: Date,
       required: [true, "Application deadline is required"],
     },
-    benefits: {
-      type: [String],
-      default: [],  // Empty array by default
-    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User model
+      ref: "User",
       required: true,
     },
     applicants: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User model
+        ref: "User",
       }
     ]
   },
   {
-    timestamps: true,  // Automatically adds createdAt and updatedAt
+    timestamps: true,
   }
 );
 

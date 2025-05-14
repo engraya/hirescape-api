@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api', jobRouter);
 app.get('/', (_req : Request, res : Response) => {
-    res.json({ message : "Hello from Express"})
+    res.json({ message : "Welcome to the Hirescape API" });
 });
 
 
