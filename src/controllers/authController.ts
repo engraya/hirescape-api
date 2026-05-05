@@ -79,9 +79,13 @@ export const login = async (req: Request, res: Response) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: existingUser._id, email: existingUser.email },
-            process.env.JWT_SECRET as string,  // Use your secret key here
-            { expiresIn: '1h' }  // Token expiry time (adjust as needed)
+            {
+                userId: existingUser._id,
+                email: existingUser.email,
+                verified: existingUser.verified ?? false,
+            },
+            process.env.JWT_SECRET as string,
+            { expiresIn: '1h' }
         );
 
         // Set the JWT token in an HTTP-only cookie
@@ -103,6 +107,7 @@ export const login = async (req: Request, res: Response) => {
                 email: existingUser.email,
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,
+                verified: existingUser.verified ?? false,
             }
         });
     } catch (error) {

@@ -239,6 +239,7 @@ export const getUserAppliedJobs = async (req: Request, res: Response) => {
 // Delete a job (Only if the user is the creator)
 export const deleteOwnJob = async (req: Request, res: Response) => {
     try {
+        const userId = req.user?.userId;
         const job = await Job.findById(req.params.id);
         
         if (!job) {
@@ -246,11 +247,14 @@ export const deleteOwnJob = async (req: Request, res: Response) => {
         }
 
         // Check if the logged-in user is the creator
-        if (job.createdBy.toString() !== req?.user?.userId) {
+        if (job.createdBy.toString() !== userId) {
             return res.status(403).json({ success: false, message: 'Unauthorized: You can only delete your own job' });
         }
 
         await Job.findByIdAndDelete(req.params.id);
+        if (userId) {
+            await User.findByIdAndUpdate(userId, { $pull: { createdJobs: req.params.id } });
+        }
         res.status(200).json({ success: true, message: 'Job deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to delete job' });
@@ -260,15 +264,18 @@ export const deleteOwnJob = async (req: Request, res: Response) => {
 // Remove a job from user's applied jobs list
 export const removeJobFromApplied = async (req: Request, res: Response) => {
     try {
-        const user = await User.findById(req?.user?.userId);
-        
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Remove the job ID from the appliedJobs array
-        user.appliedJobs = user.appliedJobs.filter(jobId => jobId.toString() !== req.params.id);
-        await user.save();
+        await User.findByIdAndUpdate(userId, { $pull: { appliedJobs: req.params.id } });
+        await Job.findByIdAndUpdate(req.params.id, { $pull: { applicants: userId } });
 
         res.status(200).json({ success: true, message: 'Job removed from applied list' });
     } catch (error) {

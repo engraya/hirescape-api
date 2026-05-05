@@ -1,0 +1,11 @@
+import { Request, Response } from 'express';
+export declare const getAllJobs: (_req: Request, res: Response) => Promise<void>;
+export declare const getJobById: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const createJob: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const updateJob: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const deleteJob: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const applyForJob: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const getUserCreatedJobs: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const getUserAppliedJobs: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const deleteOwnJob: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
+export declare const removeJobFromApplied: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;

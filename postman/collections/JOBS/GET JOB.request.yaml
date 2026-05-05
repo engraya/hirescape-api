@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:5000/api/jobs/680f89d4c4646d55c648eb97
+method: GET
+order: 2977976719391650

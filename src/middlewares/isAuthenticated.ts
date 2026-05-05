@@ -13,7 +13,11 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         }
 
         // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string, email: string, verified: boolean };
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+            userId: string;
+            email: string;
+            verified?: boolean;
+        };
 
         // Fetch the user from the database
         const user = await User.findById(decoded.userId);
@@ -23,11 +27,11 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         }
 
         // Attach user info to the request object
-        req.user = { 
-            userId: decoded.userId, 
+        req.user = {
+            userId: decoded.userId,
             email: decoded.email,
-            verified: decoded.verified,
-            isAdmin: user.isAdmin  // Include isAdmin property
+            verified: decoded.verified ?? user.verified ?? false,
+            isAdmin: user.isAdmin,
         };
 
         // Proceed to the next middleware

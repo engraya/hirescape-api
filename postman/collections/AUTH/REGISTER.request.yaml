@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:5000/api/auth/register
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"firstName\" : \"Ahmad\",\r
+
+    \    \"lastName\" : \"Yakubu Ahmad\",\r
+
+    \    \"email\" : \"ahmadyakubuaya@gmail.com\",\r
+
+    \    \"password\" : \"28624747\",\r
+
+    \    \"confirmPassword\" : \"28624747\"\r
+
+    }"
+order: 3542960949353246

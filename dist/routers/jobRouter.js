@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const jobController = require('../controllers/jobController');
+const isAuthenticated_1 = require("../middlewares/isAuthenticated");
+const router = express_1.default.Router();
+router.get('/jobs', jobController.getAllJobs);
+router.get('/jobs/:id', jobController.getJobById);
+router.post('/jobs', isAuthenticated_1.isAuthenticated, jobController.createJob);
+router.put('/jobs/:id', isAuthenticated_1.isAuthenticated, jobController.updateJob);
+router.delete('/jobs/:id', isAuthenticated_1.isAuthenticated, jobController.deleteJob);
+router.get('/jobs/user/created', isAuthenticated_1.isAuthenticated, jobController.getUserCreatedJobs);
+router.get('/jobs/user/applied', isAuthenticated_1.isAuthenticated, jobController.getUserAppliedJobs);
+router.post('/jobs/apply/:id', isAuthenticated_1.isAuthenticated, jobController.applyForJob);
+router.delete('/jobs/created/:id', isAuthenticated_1.isAuthenticated, jobController.deleteOwnJob);
+router.delete('/jobs/applied/:id', isAuthenticated_1.isAuthenticated, jobController.removeJobFromApplied);
+module.exports = router;

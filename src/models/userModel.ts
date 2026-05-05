@@ -5,6 +5,7 @@ interface IUser extends Document {
   password: string;
   firstName: string;
   lastName: string;
+  verified: boolean;
   createdJobs: mongoose.Types.ObjectId[];
   appliedJobs: mongoose.Types.ObjectId[];
   isAdmin: boolean;
@@ -34,6 +35,10 @@ const userSchema = new Schema<IUser>({
   lastName: {
     type: String,
     required: true,
+  },
+  verified: {
+    type: Boolean,
+    default: false,
   },
   isAdmin: {
     type: Boolean,

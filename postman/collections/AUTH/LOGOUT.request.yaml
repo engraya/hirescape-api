@@ -1,0 +1,7 @@
+$kind: http-request
+url: http://localhost:5000/api/auth/logout
+method: POST
+body:
+  type: json
+  content: ""
+order: 4479001514182218

@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:5000/api/auth/users
+method: GET
+order: 4484190266171494
