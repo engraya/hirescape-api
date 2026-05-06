@@ -14,6 +14,10 @@ import {
   applicantScreeningPrompt,
   marketInsightsPrompt,
 } from '../ai/prompts';
+
+
+
+
 // ─── Feature 1: Smart Job Match Score ────────────────────────────────────────
 export const getMatchScore = async (req: Request, res: Response): Promise<void> => {
   try {

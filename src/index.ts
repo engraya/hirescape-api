@@ -41,7 +41,7 @@ app.use('/api/auth', authRouter);
 app.use('/api', jobRouter);
 app.use('/api/ai', aiRouter);
 app.get('/', (_req : Request, res : Response) => {
-    res.json({ message : "Welcome to the Hirescape API" });
+    res.json({ message : "Welcome to the HireIQ API" });
 });
 
 
