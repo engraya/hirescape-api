@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse -Directory -Name)",
+      "Bash(Get-ChildItem -Path . -Depth 2)",
+      "Bash(Select-Object FullName)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
