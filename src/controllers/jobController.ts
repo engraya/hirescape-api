@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Job from '../models/jobModel';
 import User from '../models/userModel';
 import mongoose from 'mongoose';
+import { embedAndSaveJob } from '../ai/embeddings';
 
 // Get all jobs
 export const getAllJobs = async (_req: Request, res: Response) => {
@@ -76,10 +77,12 @@ export const createJob = async (req: Request, res: Response) => {
 
         const savedJob = await newJob.save();
 
-        // Optionally: Update the user's createdJobs array with the new job's ID
         await User.findByIdAndUpdate(userId, {
             $push: { createdJobs: savedJob._id }
         });
+
+        // Generate and store semantic embedding asynchronously (non-blocking)
+        setImmediate(() => embedAndSaveJob((savedJob._id as mongoose.Types.ObjectId).toString()));
 
         res.status(201).json({ success: true, message: 'Job created successfully', job: savedJob });
     } catch (error) {
@@ -131,11 +134,15 @@ export const updateJob = async (req: Request, res: Response) => {
         if (industry) updateFields.industry = industry;
         if (applicationDeadline) updateFields.applicationDeadline = applicationDeadline;
 
-        // Update the job document
         const updatedJob = await Job.findByIdAndUpdate(jobId, updateFields, {
             new: true,
             runValidators: true,
         });
+
+        // Re-embed on update if description changed (non-blocking)
+        if (updateFields.description || updateFields.title) {
+            setImmediate(() => embedAndSaveJob(jobId));
+        }
 
         res.status(200).json({ success: true, message: 'Job updated successfully', job: updatedJob });
     } catch (error) {

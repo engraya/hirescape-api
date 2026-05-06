@@ -11,19 +11,35 @@ const app = express();
 
 // Routers
 const authRouter = require("./routers/authRouter");
-const jobRouter = require("./routers/jobRouter")
+const jobRouter = require("./routers/jobRouter");
+import aiRouter from "./routers/aiRouter";
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
 
 app.use('/api/auth', authRouter);
 app.use('/api', jobRouter);
+app.use('/api/ai', aiRouter);
 app.get('/', (_req : Request, res : Response) => {
     res.json({ message : "Welcome to the Hirescape API" });
 });

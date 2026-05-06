@@ -12,6 +12,8 @@ interface IJob extends Document {
   applicationDeadline: Date;
   createdBy: mongoose.Types.ObjectId;
   applicants: mongoose.Types.ObjectId[];
+  embedding: number[];
+  requirements: string[];
 }
 
 const jobSchema = new Schema<IJob>(
@@ -70,7 +72,16 @@ const jobSchema = new Schema<IJob>(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       }
-    ]
+    ],
+    embedding: {
+      type: [Number],
+      default: [],
+      select: false,
+    },
+    requirements: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

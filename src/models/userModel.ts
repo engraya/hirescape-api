@@ -9,6 +9,11 @@ interface IUser extends Document {
   createdJobs: mongoose.Types.ObjectId[];
   appliedJobs: mongoose.Types.ObjectId[];
   isAdmin: boolean;
+  skills: string[];
+  experienceSummary: string;
+  currentTitle: string;
+  education: string;
+  resumeText: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -52,6 +57,27 @@ const userSchema = new Schema<IUser>({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Job",
   }],
+  skills: {
+    type: [String],
+    default: [],
+  },
+  experienceSummary: {
+    type: String,
+    default: '',
+  },
+  currentTitle: {
+    type: String,
+    default: '',
+  },
+  education: {
+    type: String,
+    default: '',
+  },
+  resumeText: {
+    type: String,
+    default: '',
+    select: false,
+  },
 }, { timestamps: true });
 
 const User = mongoose.model<IUser>('User', userSchema);
